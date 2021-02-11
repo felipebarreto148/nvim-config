@@ -1,5 +1,13 @@
 " curl -fLO $HOME/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
+"
+"sudo apt-get install -y build-essential cmake python3-dev python python3
+"sudo apt-get install -y python-pip python3-pip
+"pip3 install pynvim
+"sudo apt-get install g++-8
+"sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+"sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+"
+"
 " verify and install python {{{
 function! s:show_warning_message(hlgroup, msg)
     execute 'echohl ' . a:hlgroup
@@ -104,7 +112,7 @@ call plug#begin('~/.config/nvim/plugged')
 " call plug#begin('~\AppData\Local\nvim\plugged')
 
 "Auto complete
-"Plug 'valloric/youcompleteme', { 'do': './install.py --clang-completer --racer-completer --omnisharp-completer --tern-completer' }
+Plug 'valloric/youcompleteme', { 'do': './install.py --all --racer-completer --omnisharp-completer --tern-completer --ts-completer' }
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " for deoplete run auto complete in python need to: pip install pynvim jedi
