@@ -109,113 +109,109 @@ set relativenumber
 set splitbelow
 
 call plug#begin('~/.config/nvim/plugged')
-" call plug#begin('~\AppData\Local\nvim\plugged')
 
-"Auto complete
-Plug 'valloric/youcompleteme', { 'do': './install.py --all --racer-completer --omnisharp-completer --tern-completer --ts-completer' }
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" for deoplete run auto complete in python need to: pip install pynvim jedi
-Plug 'zchee/deoplete-jedi'
+	" Navigation/search files
+	Plug 'scrooloose/nerdtree'
+	Plug 'ryanoasis/vim-devicons'
+	Plug 'Xuyuanp/nerdtree-git-plugin'
 
-" editing
-Plug 'scrooloose/nerdcommenter'
-Plug 'tpope/vim-surround'
-Plug 'godlygeek/tabular'
-Plug 'tpope/vim-repeat'
-Plug 'jiangmiao/auto-pairs'
-" to use auto format nedd: pip install yapf
-Plug 'sbdchd/neoformat'
+	" Theme
+	Plug 'dracula/vim', {'as': 'dracula'}
 
-" navigation/search files
-Plug 'scrooloose/nerdtree'
+	"I don't know
+	Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+	Plug 'junegunn/fzf.vim'
 
-" git
-Plug 'tpope/vim-fugitive'
+	"Intellisence
+	Plug 'dense-analysis/ale'
+	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" syntax
-Plug 'mattn/emmet-vim'
-Plug 'w0rp/ale'
-Plug 'davidhalter/jedi-vim'
-
-" themes/appereance
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'morhetz/gruvbox'
-Plug 'altercation/vim-colors-solarized'
+	"Status Line
+	Plug 'vim-airline/vim-airline'
+	Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
-colorscheme gruvbox
+colorscheme dracula
 
-set background=dark
-
-" vim-colors-solarized {{{
-let g:solarized_termcolors=256
-" }}}
-
-" Ale {{{
-let b:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\	'javascript': ['prettier', 'eslint'],
-\}
-let g:ale_completion_autoimport = 1
-" }}}
-
-" Airline {{{
-" enable tabline
+"Vim Airline
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#left_sep = ''
-let g:airline#extensions#tabline#left_alt_sep = ''
-let g:airline#extensions#tabline#right_sep = ''
-let g:airline#extensions#tabline#right_alt_sep = ''
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
-" enable powerline fonts
-let g:airline_powerline_fonts = 1
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
+"ale
+let b:ale_fixers = ['prettier', 'eslint']
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
 
-" Switch to your current theme
-let g:airline_theme = 'onedark'
+"COC
+let g:coc_global_extensions = [
+    \  'coc-snippets',
+    \  'coc-emmet',
+    \  'coc-html',
+    \  'coc-css',
+    \  'coc-json', 
+    \  'coc-phpls',
+    \  'coc-yaml',
+    \  'coc-prettier',
+    \  'coc-eslint',
+    \  'coc-jedi',
+    \  'coc-python',
+    \   ]
 
-" Always show tabs
-set showtabline=2
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-" We don't need to see things like -- INSERT -- anymore
-set noshowmode
-" }}}
+autocmd CursorHold * silent call CocActionAsync('highlight')
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Spaces & Tabs {{{
-set tabstop=4       " number of visual spaces per TAB
-set softtabstop=4   " number of spaces in tab when editing
-set shiftwidth=4    " number of spaces to use for autoindent
-set expandtab       " tabs are space
-set autoindent
-set copyindent      " copy indent from the previous line
-" }}} Spaces & Tabs"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" Deoplete config {{{
-let g:deoplete#enable_at_startup = 1
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-" }}}
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 
-" Neoformat {{{
-" Enable alignment
-let g:neoformat_basic_format_align = 1
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
-" Enable tab to space conversion
-let g:neoformat_basic_format_retab = 1
 
-" Enable trimmming of trailing whitespace
-let g:neoformat_basic_format_trim = 1
-" }}}
 
-" jedi {{{
-" disable autocompletion, because we use deoplete for completion
-let g:jedi#completions_enabled = 0
+"I dont know
+nnoremap <c-p> :Files<cr>
 
-" open the go-to function in split, not another buffer
-let g:jedi#use_splits_not_buffers = "right"
 
-" }}}
+set encoding=UTF-8
+"nerdtree
+let NERDTreeShowHidden = 1
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+let NERDTreeIgnore = []
+let NERDTreeStatusline = ''
+
+
+
+"nerdtree-git-plugin
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+
